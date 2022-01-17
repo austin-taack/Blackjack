@@ -3,6 +3,7 @@
 
 
 from random import shuffle
+from time import sleep
 
 
 # Dealer runs the procedure for the dealer the player is trying to beat
@@ -14,7 +15,7 @@ class Dealer:
         self.face_down_card = ""
         self.hand = []
 
-    # Deal cards to each player
+    # Deals cards to each player
     def deal(self):
         drawn_card = deck.pop(0)
         player_hand.append(drawn_card)
@@ -79,36 +80,105 @@ def sum_cards(hand):
 # Runs the main flow of the game
 debug = True
 
-deck = []
-shuffle_deck()
-dealer = Dealer()
-player_hand = []
-
-dealer.deal()
-print("Cards have been delt.")
-print("You have the " + player_hand[0][0] + " of " + player_hand[0][1] + " and the " +
-      player_hand[1][0] + " of " + player_hand[1][1] + ".")
-print("The dealer has the " + dealer.face_up_card[0] + " of " + dealer.face_up_card[1] + " and one card face-down.")
-if debug:
-    print("Debug mode: the face down card is the " + dealer.face_down_card[0] + " of " + dealer.face_down_card[1] + ".")
+print("Welcome to Blackjack. Let's start a new game.")
+sleep(1)
 print()
 
-while True:
-    print("It is now your turn.")
-    response = ""
+keep_playing = True
 
+while keep_playing:
+
+    # Initializes the game
+    deck = []
+    shuffle_deck()
+    dealer = Dealer()
+    player_hand = []
+    player_bust = False
+    dealer_bust = False
+
+    # Deals cards and reads them off
+    dealer.deal()
+    print("Cards have been delt.")
+    sleep(1)
+    print("You have the " + player_hand[0][0] + " of " + player_hand[0][1] + " and the " +
+          player_hand[1][0] + " of " + player_hand[1][1] + ".")
+    sleep(1)
+    print("The dealer has the " + dealer.face_up_card[0] + " of " + dealer.face_up_card[1] + " and one card face-down.")
+    sleep(1)
+    if debug:
+        print("Debug mode: the face down card is the " + dealer.face_down_card[0] + " of " + dealer.face_down_card[1] +
+              ".")
+        sleep(1)
+    print()
+
+    # Carries out the player's turn
     while True:
+        print("It is now your turn.")
+        sleep(1)
+
         print("Type 'hit' for another card or 'stand' to end your turn (without quotation marks).")
         response = input()
-        if response == 'hit' or response == 'stand':
+        if response == 'hit':
+            draw_card(player_hand)
+            print("You have drawn the " + player_hand[-1][0] + " of " + player_hand[-1][1] + ".")
+            sleep(1)
+            if sum_cards(player_hand) > 21:
+                player_bust = True
+                print("Bust.")
+                sleep(1)
+                break
+        elif response == 'stand':
             break
         else:
             print("Please enter a valid command.")
 
-    if response == 'hit':
-        draw_card(player_hand)
-        bust = sum_cards(player_hand) <= 21
-        print("You have drawn the " + player_hand[-1][0] + " of " + player_hand[-1][1] + ".")
-        if bust:
-            print("You have busted.")
+    print()
+
+    # Carries out the dealer's turn
+    if not player_bust:
+        print("It is now the dealer's turn.")
+        sleep(1)
+
+        while True:
+            if sum_cards(dealer.hand) <= 16:
+                draw_card(dealer.hand)
+                print("The dealer drew the " + dealer.hand[-1][0] + " of " + dealer.hand[-1][1] + ".")
+                sleep(1)
+                if sum_cards(dealer.hand) > 21:
+                    sleep(1)
+                    dealer_bust = True
+                    break
+            else:
+                break
+
+        print()
+
+    # Handles end of the turn
+    dealer_score = sum_cards(dealer.hand)
+    player_score = sum_cards(player_hand)
+    print("You: " + str(player_score) + " \tDealer: " + str(dealer_score))
+    sleep(1)
+
+    if dealer_score > player_score or player_bust:
+        print("Sorry, you lose.")
+    elif dealer_score < player_score or dealer_bust:
+        print("You win!")
+    else:
+        print("It's a tie.")
+
+    sleep(1)
+    print()
+
+    while True:
+        print("Would you like to play again? Type 'Y' for yes or 'N' for no (without quotation marks).")
+        response = input()
+
+        if response == 'N':
+            print("Thanks for playing!")
+            keep_playing = False
             break
+        elif response == 'Y':
+            print()
+            break
+        else:
+            print("Please enter a valid command.")
