@@ -78,7 +78,7 @@ def sum_cards(hand):
 
 
 # Runs the main flow of the game
-debug = True
+debug = False
 
 print("Welcome to Blackjack. Let's start a new game.")
 sleep(1)
@@ -154,6 +154,9 @@ while keep_playing:
         print()
 
     # Handles end of the turn
+    print("The dealer's face-down card was the " + dealer.face_down_card[0] + " of " + dealer.face_down_card[1] + ".")
+    sleep(1)
+
     dealer_score = sum_cards(dealer.hand)
     player_score = sum_cards(player_hand)
     print("You: " + str(player_score) + " \tDealer: " + str(dealer_score))
